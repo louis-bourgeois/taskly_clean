@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-
+import NavButton from "ui/app/NavButton";
 export default function Navbar() {
   const titles = {
     evening: "Good Evening,",
@@ -32,35 +32,35 @@ export default function Navbar() {
   }, []); // Ne s'exécute qu'au montage du composant
 
   return (
-    <ul className="flex items-center justify-evenly mt-8">
-      <li className="">
-        <button className="transition ease-in hover:scale-110">
+    <ul className="flex items-center justify-between m-8">
+      <li className="max-w-[8.75%]">
+        <NavButton flex>
           <Image
             src="/user/photo_profil_google.jpeg"
             alt="Profile Picture"
-            width="125"
-            height="125"
+            width="500"
+            height="500"
             priority={true}
             className="rounded-full"
           />
-        </button>
+        </NavButton>
       </li>
       <li>
-        <h1 className="text-6xl font-black">
+        <h1 className="sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl  font-black">
           {title} <span className="text-blue">{user.name}</span>
         </h1>
       </li>
-      <li className="flex max-w-[15%] gap-iconsContainer items-center justify-center h-full mr-[0.5vw]">
-        <button className="fix-sizing-pseudo-border-box border border-blue grow-0 shrink-0 w-3/5 h-[120%] rounded-full shadow-2xl flex items-center justify-center">
+      <li className="flex max-w-[17.5%] gap-iconsContainer items-center justify-center h-full mr-[0.5vw]">
+        <NavButton additionalStyles="border border-blue rounded-full shadow-2xl">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            className="grow-0 shrink-0 w-3/5 p-[20%]"
+            className="grow-0 shrink-0 w-full p-[20%]"
           >
             <path d="M3.624,15a8.03,8.03,0,0,0,10.619.659l5.318,5.318a1,1,0,0,0,1.414-1.414l-5.318-5.318A8.04,8.04,0,0,0,3.624,3.624,8.042,8.042,0,0,0,3.624,15Zm1.414-9.96a6.043,6.043,0,1,1-1.77,4.274A6,6,0,0,1,5.038,5.038Z"></path>
           </svg>
-        </button>
-        <button className="grow-0 shrink-0 w-[49.5%]">
+        </NavButton>
+        <NavButton flexShrinkGrow additionalStyles="w-1/2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -68,7 +68,7 @@ export default function Navbar() {
           >
             <path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8 A8,8,0,0,1,12,20Zm4-9H13V8a1,1,0,0,0-2,0v3H8a1,1,0,0,0,0,2h3v3a1,1,0,0,0,2,0V13h3a1,1,0,0,0,0-2Z"></path>
           </svg>
-        </button>
+        </NavButton>
       </li>
     </ul>
   );

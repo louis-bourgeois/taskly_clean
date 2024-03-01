@@ -47,3 +47,6 @@ a:active {
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+.gap-iconsContainer {
+  gap: clamp(0.8vw, 1vw, 3vw);
+}
