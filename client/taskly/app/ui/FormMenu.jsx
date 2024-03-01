@@ -6,6 +6,7 @@ import AnchorPoint from "ui/AnchorPoint";
 import Form from "ui/Form";
 import Input from "ui/Input";
 import PasswordInputContainer from "ui/auth/PasswordInputContainer";
+import { useUser } from "../../context/UserContext";
 
 export default function FormMenu({
   absolute,
@@ -27,6 +28,8 @@ export default function FormMenu({
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [error, setError] = useState("");
+  const { login } = useUser();
+  const { user } = useUser();
 
   const [passwordMatch, setPasswordMatch] = useState(true);
   const errors = [
@@ -37,7 +40,7 @@ export default function FormMenu({
       href: "/auth/login",
     },
     {
-      error: "unauthorized",
+      error: "Unauthorized",
       message: "Password is incorrect.",
       anchor: undefined,
       href: undefined,
@@ -49,7 +52,13 @@ export default function FormMenu({
       href: undefined,
     },
     {
-      error: "not found",
+      error: "Internal Servor Error",
+      message: "Server Error (500), ",
+      anchor: "report here",
+      href: "/support/report",
+    },
+    {
+      error: "Not Found",
       message: "We don't know about you :(,",
       anchor: "please sign up.",
       href: "/auth/signup",
@@ -88,15 +97,21 @@ export default function FormMenu({
       });
     }
   };
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     switch (action) {
       case "add user":
         addUser(formData);
         break;
       case "check user":
-        checkUser(formData);
-        break;
+        const res = await login(formData);
+        if (res && res.status === 200) {
+          router.push("/app");
+        } else {
+          setError(res.statusText);
+
+          return null;
+        }
     }
   };
   const cleanFormData = (formData) => {
@@ -115,11 +130,7 @@ export default function FormMenu({
         "http://localhost:3001/api/users/check",
         data
       );
-
       // Si le statut est 200, on peut assumer que la requête a réussi.
-      if (result.status === 200) {
-        router.push("/app");
-      }
     } catch (error) {
       // Axios encapsule la réponse d'erreur dans `error.response`
       if (error.response) {
@@ -152,7 +163,14 @@ export default function FormMenu({
     } else if (result.data === "username already taken") {
       setError("username already taken");
     } else if (result.status === 200) {
-      router.push("/app");
+      const res = await login(formData);
+      if (res && res.status === 200) {
+        router.push("/app");
+      } else {
+        console.log("anormal error", res);
+        setError(res.statusText);
+        return null;
+      }
     }
   };
   return (

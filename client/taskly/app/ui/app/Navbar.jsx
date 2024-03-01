@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import NavButton from "ui/app/NavButton";
+import { useUser } from "../../../context/UserContext";
+
 export default function Navbar() {
   const titles = {
     evening: "Good Evening,",
@@ -11,9 +13,8 @@ export default function Navbar() {
     afternoon: "Good Afternoon,",
     meal: "Bon Appétit,",
   };
-  const user = {
-    name: "Louis",
-  };
+  const { user } = useUser();
+  console.log("user", user);
   const defaultTitle = `Welcome`;
   const [title, setTitle] = useState(defaultTitle);
 
@@ -47,7 +48,7 @@ export default function Navbar() {
       </li>
       <li>
         <h1 className="sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl  font-black">
-          {title} <span className="text-blue">{user.name}</span>
+          {title} <span className="text-blue">{user.first_name}</span>
         </h1>
       </li>
       <li className="flex max-w-[17.5%] gap-iconsContainer items-center justify-center h-full mr-[0.5vw]">
@@ -64,7 +65,7 @@ export default function Navbar() {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            class="flex justify-center items-center"
+            className="flex justify-center items-center"
           >
             <path d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8 A8,8,0,0,1,12,20Zm4-9H13V8a1,1,0,0,0-2,0v3H8a1,1,0,0,0,0,2h3v3a1,1,0,0,0,2,0V13h3a1,1,0,0,0,0-2Z"></path>
           </svg>
