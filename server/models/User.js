@@ -88,6 +88,7 @@ class User {
 
       users.push(id, userData, hash_password);
     }
+    console.log("users array from User.js: ", users);
     return users;
   }
 
@@ -157,9 +158,8 @@ class User {
     ];
 
     let foundIds = [];
-
+    console.log(email);
     for (let criterion of searchCriteria.filter((c) => c.value !== undefined)) {
-      console.log(criterion.query);
       try {
         const { rows } = await pool.query(criterion.query, [criterion.value]);
         rows.forEach((row) => {
