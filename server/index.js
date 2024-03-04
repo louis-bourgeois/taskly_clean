@@ -20,11 +20,12 @@ const port = process.env.PORT;
 // CORS options
 const corsOptions = {
   origin: "http://localhost:3000", // Allow only requests from this origin
+  credentials: true,
   optionsSuccessStatus: 200,
 };
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 100 requests per windowMs
   handler: (req, res) => {
     res.status(429).render("rateLimit", {
       title: "Limite de Requêtes Dépassée",
@@ -35,7 +36,7 @@ const limiter = rateLimit({
 // Middlewares
 app.use(helmet()); // Sécurise les réponses avec divers en-têtes HTTP
 app.use(cors(corsOptions)); // Active CORS avec les options spécifiées
-app.use(limiter); // Applique la limitation de débit
+// app.use(limiter); // Applique la limitation de débit
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -46,7 +47,9 @@ app.use(
     saveUninitialized: true,
     cookie: {
       httpOnly: true, // Mitigates the risk of client side script accessing the protected cookie
-      maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expiry (7 day in this case)
+      maxAge: 24 * 60 * 60 * 1000, // Cookie expiry (7 day in this case)
+      sameSite: "Lax",
+      secure: false,
     },
   })
 );
@@ -71,35 +74,39 @@ app.get("/", (req, res) => {
 passport.use(
   new Strategy({ usernameField: "email" }, async (email, password, cb) => {
     console.log("appelé", email, password);
-    try {
-      const user = await User.find({
-        email: email,
+    const user = await User.find({
+      email: email,
+    });
+    if (user) {
+      bcrypt.compare(password, user[2], (err, result) => {
+        if (err) return cb(null, false);
+        if (result) {
+          console.log("usr", user);
+          return cb(null, user);
+        }
+        return cb("Incorrect Password");
       });
-      if (user) {
-        bcrypt.compare(password, user[2], (err, result) => {
-          if (err) return cb(null, false);
-          if (result) {
-            console.log("====================================");
-            console.log("tout est ok");
-            console.log("====================================");
-            const user_clean = user[1];
-            return cb(null, user_clean);
-          }
-        });
-      } else {
-        throw new Error({ message: "User not found", status: 404 });
-      }
-    } catch (e) {
-      return cb(e.message);
+    } else {
+      return cb("User not found");
     }
   })
 );
 
 passport.serializeUser((user, cb) => {
-  cb(null, user);
+  cb(null, user[0]);
 });
-passport.deserializeUser((user, cb) => {
-  cb(null, user);
+passport.deserializeUser(async (id, cb) => {
+  try {
+    const user = await User.getData("all", id);
+    if (user) {
+      console.log("user");
+      cb(null, user);
+    } else {
+      cb(new Error("User not found"), false);
+    }
+  } catch (e) {
+    cb(e, false);
+  }
 });
 
 app.listen(port, () => {

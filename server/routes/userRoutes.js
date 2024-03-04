@@ -1,17 +1,29 @@
 import express from "express";
 import passport from "passport";
-import { checkUser, createUser } from "../controllers/userControllers.js";
+import { createUser, getUserData } from "../controllers/userControllers.js";
 import { hashPassword } from "../middleware/pasword.js";
 const router = express.Router();
 
-router.get("/", checkUser);
+router.get("/me", (req, res) => {
+  console.log("user", req.user);
+  console.log(req.isAuthenticated());
+  if (!req.isAuthenticated()) {
+    return res.status(403).send("Not authenticated");
+  }
+  return res.json({ user: req.user });
+});
+router.post("/", getUserData);
 router.post("/register", hashPassword, createUser);
 router.post("/login", (req, res, next) => {
-  // console.log("Received data:", req.body);
-  // res.json({ status: "success", data: req.body });
   passport.authenticate("local", (err, user, info) => {
     console.log("body", req.body);
-    if (err) return res.status(500).json({ message: "Internal server error" });
+    if (err) {
+      if (err === "User not found") {
+        return res.status(404).send(err);
+      } else {
+        return res.status(401).send(err);
+      }
+    }
     if (!user) {
       return res
         .status(401)

@@ -2,6 +2,9 @@ import bcrypt from "bcrypt";
 const saltrounds = 12;
 
 export async function hashPassword(req, res, next) {
+  console.log("====================================");
+  console.log("1", req.body);
+  console.log("====================================");
   try {
     req.body.data.hashPassword = await bcrypt.hash(
       req.body.data.password,
@@ -9,6 +12,9 @@ export async function hashPassword(req, res, next) {
     );
     const { password, ...cleanedData } = req.body.data;
     req.body.data = cleanedData;
+    console.log("====================================");
+    console.log("2", req.body);
+    console.log("====================================");
     next();
   } catch (error) {
     res.status(500).json({

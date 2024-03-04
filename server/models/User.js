@@ -58,7 +58,8 @@ class User {
     const result = await this.findId(
       criteria.username,
       criteria.email,
-      criteria.phone_number
+      criteria.phone_number,
+      criteria.id
     );
     if (!result) {
       return undefined;
