@@ -1,7 +1,10 @@
-import { darkMode } from "@/layout";
+"use client";
 import FormMenu from "@/ui/FormMenu";
-
+import Blur from "@/ui/app/Blur";
+import LoginHeroe from "@/ui/app/LoginHeroe";
+import { useState } from "react";
 export default function Page() {
+  const [showComponent, setShowComponent] = useState(false);
   const inputs = [
     {
       type: "email",
@@ -14,11 +17,25 @@ export default function Page() {
     email: "",
     password: "",
   };
-  const action = "check user";
+  const action = "Log in";
+
+  const handleClick = () => {
+    setShowComponent(!showComponent);
+  };
+
   return (
     <>
+      <Blur
+        trigger={handleClick}
+        show={showComponent}
+        showZ="30"
+        hideZ="0"
+        bg="bg-blue/[.05]"
+        fullscreen={true}
+      ></Blur>
       <FormMenu
-        absolute="true"
+        display={showComponent}
+        absolute
         mainTitle="Welcome back to Taskly"
         libelle="User data"
         inputs={inputs}
@@ -26,18 +43,14 @@ export default function Page() {
         formDataArray={formDataArray}
         action={action}
         bottomMessage="Not registered?"
+        bottomMessageHREF="/auth/signup"
         submitValue="Log in"
       ></FormMenu>
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="font-black text-8xl text-center">Welcome to taskly!</h1>
-        <button
-          className={`${
-            darkMode ? " border border-blue" : ""
-          } shadow-[0_2px_40px_rgba(0,0,0.1)] hover:scale-110 transition ease-in-out text-3xl font-black rounded-full mt-[3vh]  px-[8vw] py-[1vh]`}
-        >
-          Log in
-        </button>
-      </div>
+      <LoginHeroe
+        handle={handleClick}
+        h1="Welcome to Taskly"
+        button={action}
+      />
     </>
   );
 }

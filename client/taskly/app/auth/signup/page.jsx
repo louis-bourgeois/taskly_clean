@@ -1,7 +1,10 @@
-import { darkMode } from "@/layout";
+"use client";
 import FormMenu from "@/ui/FormMenu";
-
+import Blur from "@/ui/app/Blur";
+import LoginHeroe from "@/ui/app/LoginHeroe";
+import { useState } from "react";
 export default function Page() {
+  const [showComponent, setShowComponent] = useState(false);
   const formDataArray = {
     fName: "",
     lName: "",
@@ -9,7 +12,7 @@ export default function Page() {
     email: "",
     password: "",
   };
-  const action = "add user";
+  const action = "Sign up";
   const inputs = [
     {
       type: "text",
@@ -43,10 +46,23 @@ export default function Page() {
       placeholder: "Email",
     },
   ];
+  const handleClick = () => {
+    setShowComponent(!showComponent);
+  };
 
   return (
     <>
+      <Blur
+        trigger={handleClick}
+        show={showComponent}
+        showZ="30"
+        hideZ="0"
+        msDuration="1000"
+        bg="bg-blue/[.05]"
+        fullscreen={true}
+      />
       <FormMenu
+        display={showComponent}
         absolute
         mainTitle="Welcome to Taskly !"
         libelle="User data"
@@ -57,26 +73,12 @@ export default function Page() {
         action={action}
         submitValue="Start the adventure"
         bottomMessage="Already registered?"
+        bottomMessageHREF="/auth/login"
         termsConditions
         succeedRedirect="/app"
-        newUser={true}
+        newUser
       />
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1
-          className={`${
-            darkMode ? "text-white" : ""
-          } font-black text-8xl text-center w-full`}
-        >
-          Welcome to task<span className="text-blue">ly</span>!
-        </h1>
-        <button
-          className={`${
-            darkMode ? "border-gradient-dark-mode-gold-to-black text-white" : ""
-          } shadow-[0_2px_40px_rgba(0,0,0.1)] hover:scale-110 transition ease-in-out text-3xl font-black rounded-full mt-[3vh]  px-[10%] py-[0.75%]`}
-        >
-          Sign up
-        </button>
-      </div>
+      <LoginHeroe h1="Welcome to Taskly" handle={handleClick} button={action} />
     </>
   );
 }

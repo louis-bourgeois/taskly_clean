@@ -1,5 +1,5 @@
 import Image from "next/image";
-import AnchorPoint from "ui/AnchorPoint";
+import Link from "next/link";
 import NavItem from "ui/NavItem";
 export default function Navbar({
   image,
@@ -21,7 +21,7 @@ export default function Navbar({
       <ul className="flex justify-left items-center w-screen">
         {image && (
           <li>
-            <AnchorPoint href={imageHREF}>
+            <Link href={imageHREF}>
               <Image
                 draggable="false"
                 className="m-[1vw] ml-[2vw]"
@@ -30,7 +30,7 @@ export default function Navbar({
                 width={imageDimensions.width}
                 height={imageDimensions.height}
               />
-            </AnchorPoint>
+            </Link>
           </li>
         )}
         {links.map((link, index) => (
@@ -43,15 +43,15 @@ export default function Navbar({
                 : "text-grey hover:text-black"
             }`}
           >
-            <AnchorPoint href={link.href}>{link.title}</AnchorPoint>
+            <Link href={link.href}>{link.title}</Link>
           </NavItem>
         ))}
         {connectButons && (
           <>
             <NavItem text additionalStyles="ml-auto text-blue font-light">
-              <AnchorPoint href="auth/login">Log in</AnchorPoint>
+              <Link href="auth/login">Log in</Link>
             </NavItem>
-            <AnchorPoint href="auth/signup">
+            <Link href="auth/signup">
               <NavItem
                 text
                 additionalStyles={`${
@@ -62,7 +62,7 @@ export default function Navbar({
               >
                 Start
               </NavItem>
-            </AnchorPoint>
+            </Link>
           </>
         )}
       </ul>

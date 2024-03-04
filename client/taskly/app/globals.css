@@ -50,3 +50,8 @@ a:active {
 .gap-iconsContainer {
   gap: clamp(0.8vw, 1vw, 3vw);
 }
+@layer components {
+  a.custom-color-anchor {
+    color: #007aff !important; /* Force la couleur bleue, malgré la règle globale */
+  }
+}

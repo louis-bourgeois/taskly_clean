@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      zIndex: {
+        40: "40",
+      },
       fontFamily: {
         poppins: ["var(--font-poppins)"],
         inter: ["var(--font-inter)"],

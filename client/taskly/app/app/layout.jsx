@@ -2,21 +2,21 @@
 import Navbar from "@/ui/app/Navbar";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../context/UserContext.js";
 export default function AppLayout({ children }) {
-  const { user } = useUser();
-  console.log(user);
+  const { user, loading } = useUser();
   useEffect(() => {
-    if (!user) {
+    if (!user && !loading) {
       redirect("/auth");
+    } else {
+      console.log(user);
     }
-  });
-  if (!user) {
-    return null;
-  }
+  }, [user, loading]);
+
   return (
     <>
-      <Navbar></Navbar>
+      <Navbar user={user}></Navbar>
+
       {children}
     </>
   );

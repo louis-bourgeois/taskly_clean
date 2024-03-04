@@ -1,6 +1,6 @@
-export default function AnchorPoint({ href, children, additionalStyles }) {
+export default function AnchorPoint({ children, styles }) {
   return (
-    <a draggable="false" className={additionalStyles} href={href}>
+    <a draggable="false" className={styles + ""}>
       {children}
     </a>
   );

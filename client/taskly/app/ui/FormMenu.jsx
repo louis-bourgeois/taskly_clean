@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AnchorPoint from "ui/AnchorPoint";
@@ -7,9 +8,8 @@ import Form from "ui/Form";
 import Input from "ui/Input";
 import PasswordInputContainer from "ui/auth/PasswordInputContainer";
 import { useUser } from "../../context/UserContext";
-
 export default function FormMenu({
-  absolute,
+  display,
   mainTitle,
   libelle,
   inputs,
@@ -20,7 +20,7 @@ export default function FormMenu({
   action,
   bottomMessage,
   termsConditions = false,
-  succeedRedirect,
+  bottomMessageHREF,
   newUser,
 }) {
   const router = useRouter();
@@ -28,8 +28,7 @@ export default function FormMenu({
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [error, setError] = useState("");
-  const { login } = useUser();
-  const { user } = useUser();
+  const { login, getUserData, user } = useUser();
 
   const [passwordMatch, setPasswordMatch] = useState(true);
   const errors = [
@@ -40,7 +39,7 @@ export default function FormMenu({
       href: "/auth/login",
     },
     {
-      error: "Unauthorized",
+      error: "unauthorized",
       message: "Password is incorrect.",
       anchor: undefined,
       href: undefined,
@@ -58,7 +57,7 @@ export default function FormMenu({
       href: "/support/report",
     },
     {
-      error: "Not Found",
+      error: "not found",
       message: "We don't know about you :(,",
       anchor: "please sign up.",
       href: "/auth/signup",
@@ -91,7 +90,7 @@ export default function FormMenu({
         if (!isMatch) {
           setError("password doesn't match");
         } else {
-          setError("");
+          setError("Internal Servor Error");
         }
         return prev; // On retourne prev sans le modifier
       });
@@ -100,15 +99,26 @@ export default function FormMenu({
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     switch (action) {
-      case "add user":
+      case "Sign up":
         addUser(formData);
         break;
-      case "check user":
+      case "Log in":
         const res = await login(formData);
         if (res && res.status === 200) {
           router.push("/app");
         } else {
-          setError(res.statusText);
+          console.log(res.status);
+          switch (res.status) {
+            case 404:
+              setError("not found");
+              break;
+            case 401:
+              setError("unauthorized");
+              break;
+            case 500:
+              setError("Internal Servor Error");
+              break;
+          }
 
           return null;
         }
@@ -123,31 +133,6 @@ export default function FormMenu({
 
     return cleanedFormData;
   };
-
-  const checkUser = async (data) => {
-    try {
-      const result = await axios.post(
-        "http://localhost:3001/api/users/check",
-        data
-      );
-      // Si le statut est 200, on peut assumer que la requête a réussi.
-    } catch (error) {
-      // Axios encapsule la réponse d'erreur dans `error.response`
-      if (error.response) {
-        const { status } = error.response;
-        if (status === 404) {
-          setError("not found");
-        } else if (status === 401) {
-          setError("unauthorized");
-        }
-      } else {
-        // Gère les erreurs qui ne sont pas des réponses HTTP (ex. problème réseau)
-        console.log("Error: ", error.message);
-        setError("An unexpected error occurred");
-      }
-    }
-  };
-
   const addUser = async (data) => {
     data = cleanFormData(formData);
     const result = await axios.post(
@@ -167,7 +152,10 @@ export default function FormMenu({
       if (res && res.status === 200) {
         router.push("/app");
       } else {
-        console.log("anormal error", res);
+        console.log(
+          "anormal error : user unauthorised from signup form ?",
+          res
+        );
         setError(res.statusText);
         return null;
       }
@@ -175,9 +163,10 @@ export default function FormMenu({
   };
   return (
     <div
-      className={`rounded-3xl shadow-[0_4px_20px_rgba(0,0,0.5)] bg-white ${
-        absolute &&
-        "absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-2"
+      className={`rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.5)] bg-white transition-opacity ease-in-out duration-1000 ${
+        display ? "opacity-100" : "opacity-0"
+      } ${"absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 "} ${
+        display ? "z-30" : "z-0"
       }`}
     >
       {" "}
@@ -186,7 +175,6 @@ export default function FormMenu({
         {libelle && (
           <p className="self-start font-extralight text-3xl">{libelle}</p>
         )}
-
         {mainTitle && (
           <h3 className="text-6xl font-bold self-start text-gradient-black-to-purple">
             {mainTitle}
@@ -238,6 +226,7 @@ export default function FormMenu({
           )}
           {error &&
             errors.map((e, index) => {
+              console.log(e.error === error);
               if (e.error === error) {
                 return (
                   <p
@@ -246,9 +235,9 @@ export default function FormMenu({
                   >
                     {e.message}{" "}
                     {e.href && e.anchor && (
-                      <AnchorPoint href={e.href}>
-                        <span className="text-blue">{e.anchor}</span>
-                      </AnchorPoint>
+                      <Link href={e.href} passHref legacyBehavior>
+                        <AnchorPoint styles="text-blue">{e.anchor}</AnchorPoint>
+                      </Link>
                     )}
                   </p>
                 );
@@ -264,6 +253,7 @@ export default function FormMenu({
                 name="terms and conditions checkbox"
                 id="terms and conditions checkbox"
                 additionalStyles="p-2 border border-grey rounded-2xl w-5 rounded-full"
+                required
               />
 
               <label
@@ -271,13 +261,13 @@ export default function FormMenu({
                 className="flex-grow-2 text-xl text-black italic"
               >
                 I have read and accepted the{" "}
-                <span className="text-blue">
-                  <AnchorPoint href="/legal/conditions">conditions</AnchorPoint>
-                </span>{" "}
+                <Link href="/legal/conditions" passHref legacyBehavior>
+                  <a className="custom-color-anchor">conditions</a>
+                </Link>
                 and{" "}
-                <span className="text-blue">
-                  <AnchorPoint href="/legal/terms">terms of use</AnchorPoint>
-                </span>
+                <Link href="/legal/terms" passHref legacyBehavior>
+                  <a className="custom-color-anchor">terms of use</a>
+                </Link>
                 .
               </label>
             </div>
@@ -288,10 +278,10 @@ export default function FormMenu({
             additionalStyles="p-2 border-black text-3xl mt-[2rem] font-black w-full cursor-pointer hover:scale-105 transition ease-in-out"
             disabled={!passwordMatch}
           />
-        </Form>
-        <AnchorPoint href="/auth/login">
-          <span className="text-blue text-xl">{bottomMessage}</span>
-        </AnchorPoint>
+        </Form>{" "}
+        <Link href={bottomMessageHREF} passHref legacyBehavior>
+          <a className="custom-color-anchor">{bottomMessage}</a>
+        </Link>{" "}
       </div>
     </div>
   );
