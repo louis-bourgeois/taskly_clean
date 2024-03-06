@@ -1,22 +1,36 @@
 "use client";
-import { register } from "swiper/element/bundle";
+import SlickCarousel from "@/ui/app/SlickCarousel";
+import Slide from "@/ui/app/Slide";
+import DateHeader from "@/ui/app/currently/DateHeader";
+import SlideNav from "@/ui/app/currently/SlideNav";
 import { useUser } from "../../../context/UserContext";
-
 export default function Page() {
-  register();
+  const settings = {
+    dots: false,
+    infinite: false,
+    speed: 300,
+    centerMode: true,
+    centerPadding: "150px",
+    arrows: false,
+    draggable: true,
+  };
   const { user, logout } = useUser();
+  let slideNumber = 14;
+
+  const slides = [...Array(slideNumber).keys()].map((index) => {
+    return (
+      <Slide index={index} key={index}>
+        <SlideNav>
+          <DateHeader index={index}></DateHeader>
+          <div></div>
+        </SlideNav>
+      </Slide>
+    );
+  });
 
   return (
-    // <>
-    //   <swiper-container
-    //     class="h-[70vh] mt-[5vh] shadow-2xl"
-    //     slides-per-view="1"
-    //     mousewheel-force-to-axis="true"
-    //   >
-    //     <swiper-slide class="m-5vh border border-blue ">Slide 2</swiper-slide>
-    //     <swiper-slide>Slide 3</swiper-slide>
-    //     <swiper-slide>Slide 4</swiper-slide>
-    //   </swiper-container>
-    // </>
+    <SlickCarousel settings={settings} slideNb={slideNumber}>
+      {slides}
+    </SlickCarousel>
   );
 }

@@ -207,7 +207,11 @@ export default function FormMenu({
           {password && (
             <PasswordInputContainer
               name="password"
-              placeholder="Enter a strong Password"
+              placeholder={`${
+                action === "Log in "
+                  ? "Enter your password"
+                  : action === "Sign up" && "Enter a strong password"
+              }`}
               setVisibilityState={setPasswordVisible}
               visibilityState={passwordVisible}
               autoDimensions

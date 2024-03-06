@@ -55,3 +55,6 @@ a:active {
     color: #007aff !important; /* Force la couleur bleue, malgré la règle globale */
   }
 }
+.fontMenu {
+  font-size: clamp(0.25rem, 1vw + 0.1rem, 4rem);
+}

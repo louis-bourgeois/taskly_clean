@@ -1,16 +1,19 @@
 export default function NavButton({
   children,
-  additionalStyles,
+  styles,
   flex,
   flexShrinkGrow,
+  onClick,
+  notHover,
 }) {
   return (
     <button
-      className={`${additionalStyles} ${
+      className={`${styles} ${
         flexShrinkGrow && "grow-0 shrink-0"
-      } transition ease-in hover:scale-110 ${
+      } transition ease-in ${notHover ? "" : "hover:scale-110"} ${
         flex && "flex items-center justify-center"
       }`}
+      onClick={onClick}
     >
       {children}
     </button>
