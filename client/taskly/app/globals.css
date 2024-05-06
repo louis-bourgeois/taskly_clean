@@ -58,3 +58,22 @@ a:active {
 .fontMenu {
   font-size: clamp(0.25rem, 1vw + 0.1rem, 4rem);
 }
+.scroll-custom {
+  scrollbar-width: thin; /* Pour Firefox */
+  scrollbar-color: #4b5563 #f3f4f6; /* Pour Firefox, couleur du thumb et du track */
+}
+
+.scroll-custom::-webkit-scrollbar {
+  width: 12px; /* Largeur de la scrollbar pour Chrome, Safari et Edge */
+}
+
+.scroll-custom::-webkit-scrollbar-track {
+  background: transparent; /* Couleur du rail/track pour Chrome, Safari et Edge */
+}
+
+.scroll-custom::-webkit-scrollbar-thumb {
+  background-color: #4b5563; /* Couleur du thumb pour Chrome, Safari et Edge */
+  border-radius: 9999px; /* Border-radius du thumb */
+  border: 3px solid transparent; /* Enlève le rail en simulant un border transparent */
+  background-clip: content-box; /* Empêche le fond de déborder dans le border */
+}

@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 export default function Blur({
   trigger,
   show,
@@ -7,6 +9,9 @@ export default function Blur({
   hideZ,
   styles,
 }) {
+  useEffect(() => {
+    document.body.style.overflowY = "hidden";
+  });
   return (
     <div
       onClick={trigger}

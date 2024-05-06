@@ -1,9 +1,11 @@
 "use client";
+import { useUser } from "@/../context/UserContext";
 import SlickCarousel from "@/ui/app/SlickCarousel";
 import Slide from "@/ui/app/Slide";
 import DateHeader from "@/ui/app/currently/DateHeader";
+import SectionContainer from "@/ui/app/currently/SectionContainer";
 import SlideNav from "@/ui/app/currently/SlideNav";
-import { useUser } from "../../../context/UserContext";
+
 export default function Page() {
   const settings = {
     dots: false,
@@ -14,23 +16,18 @@ export default function Page() {
     arrows: false,
     draggable: true,
   };
-  const { user, logout } = useUser();
   let slideNumber = 14;
-
-  const slides = [...Array(slideNumber).keys()].map((index) => {
-    return (
-      <Slide index={index} key={index}>
-        <SlideNav>
-          <DateHeader index={index}></DateHeader>
-          <div></div>
-        </SlideNav>
-      </Slide>
-    );
-  });
-
+  const { user, logout, loading } = useUser();
   return (
     <SlickCarousel settings={settings} slideNb={slideNumber}>
-      {slides}
+      {[...Array(slideNumber).keys()].map((index) => (
+        <Slide index={index} key={index}>
+          <SlideNav>
+            <DateHeader index={index}></DateHeader>
+          </SlideNav>
+          <SectionContainer></SectionContainer>
+        </Slide>
+      ))}
     </SlickCarousel>
   );
 }

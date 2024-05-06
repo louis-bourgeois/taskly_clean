@@ -1,5 +1,8 @@
 import pool from "../config/dbConfig.js";
 import { isUUID } from "../utils/validate.js";
+import Section from "./Section.js";
+import Task from "./Task.js";
+
 class User {
   constructor(
     username,
@@ -45,7 +48,9 @@ class User {
           "INSERT INTO user_contact (user_id, email) VALUES ($1, $2);";
         await client.query(query, [userId, this.email]);
       }
-
+      const insertSection =
+        "INSERT INTO section (name, user_id) VALUES ($1,$2)";
+      await client.query(insertSection, ["Other", userId]);
       await client.query("COMMIT");
     } catch (e) {
       await client.query("ROLLBACK");
@@ -86,10 +91,12 @@ class User {
       }
 
       const hash_password = await this.getHashPassword(id);
-
+      const tasks = await this.getTasks(id);
+      userData.tasks = tasks;
+      userData.sections = await Section.find(id);
       users.push(id, userData, hash_password);
     }
-    console.log("users array from User.js: ", users);
+
     return users;
   }
 
@@ -118,6 +125,31 @@ class User {
     const { rows } = await pool.query(query, [id]);
 
     return rows[0];
+  }
+
+  static async getSections(id) {
+    if (id) {
+      try {
+        const section = await Section.find(id);
+        return section;
+      } catch (error) {
+        console.error(error);
+        throw error;
+      }
+    }
+  }
+
+  static async getTasks(id) {
+    if (id) {
+      try {
+        const tasks = await Task.find(id);
+        return tasks;
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.error("no id");
+    }
   }
   static async getHashPassword(id) {
     if (!isUUID(id)) {
@@ -159,7 +191,6 @@ class User {
     ];
 
     let foundIds = [];
-    console.log(email);
     for (let criterion of searchCriteria.filter((c) => c.value !== undefined)) {
       try {
         const { rows } = await pool.query(criterion.query, [criterion.value]);

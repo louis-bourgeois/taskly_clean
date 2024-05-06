@@ -14,13 +14,8 @@ export async function checkUser(req, res, next) {
 }
 
 export async function createUser(req, res) {
-  console.log("====================================");
-  console.log("3 (createUser)", req.body);
-  console.log("====================================");
   const result = await User.find(req.body.data, true);
-  console.log("====================================");
-  console.log("4 result of User : undefined = expected", result);
-  console.log("====================================");
+
   if (result === true) {
     res.send("already exist");
   } else if (result === "username already taken") {
@@ -28,9 +23,7 @@ export async function createUser(req, res) {
   } else {
     try {
       const data = req.body.data;
-      console.log("====================================");
-      console.log("5 creation of a user with this data : ", req.body.data);
-      console.log("====================================");
+
       const user = new User(
         data.username,
         data.fName,
@@ -46,9 +39,8 @@ export async function createUser(req, res) {
   }
 }
 export async function getUserData(req, res) {
-  console.log("appelé!!!!!!! ", req.body);
   const result = await User.getData("all", req.body.id);
-  console.log("result", result);
+
   if (result) {
     res.send(result);
   } else {

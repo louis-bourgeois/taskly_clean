@@ -4,19 +4,18 @@ import { createUser, getUserData } from "../controllers/userControllers.js";
 import { hashPassword } from "../middleware/pasword.js";
 const router = express.Router();
 
+router.post("/", getUserData);
 router.get("/me", (req, res) => {
-  console.log("user", req.user);
-  console.log(req.isAuthenticated());
+
   if (!req.isAuthenticated()) {
     return res.status(403).send("Not authenticated");
   }
   return res.json({ user: req.user });
 });
-router.post("/", getUserData);
 router.post("/register", hashPassword, createUser);
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
-    console.log("body", req.body);
+
     if (err) {
       if (err === "User not found") {
         return res.status(404).send(err);
@@ -24,6 +23,7 @@ router.post("/login", (req, res, next) => {
         return res.status(401).send(err);
       }
     }
+
     if (!user) {
       return res
         .status(401)

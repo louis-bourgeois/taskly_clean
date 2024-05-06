@@ -10,13 +10,14 @@ import passport from "passport";
 import { Strategy } from "passport-local";
 import User from "./models/User.js";
 import appRoutes from "./routes/appRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
-
+ 
 // CORS options
 const corsOptions = {
   origin: "http://localhost:3000", // Allow only requests from this origin
@@ -25,7 +26,7 @@ const corsOptions = {
 };
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 15 minutes
-  max: 10, // limit each IP to 100 requests per windowMs
+  max: 60000, // limit each IP to 100 requests per windowMs
   handler: (req, res) => {
     res.status(429).render("rateLimit", {
       title: "Limite de Requêtes Dépassée",
@@ -36,7 +37,7 @@ const limiter = rateLimit({
 // Middlewares
 app.use(helmet()); // Sécurise les réponses avec divers en-têtes HTTP
 app.use(cors(corsOptions)); // Active CORS avec les options spécifiées
-// app.use(limiter); // Applique la limitation de débit
+app.use(limiter); // Applique la limitation de débit
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -58,8 +59,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-app.use("/api/users", userRoutes);
 app.use("/app", appRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/tasks", taskRoutes);
 
 // Middlewares
 // Error Handler
@@ -73,7 +75,6 @@ app.get("/", (req, res) => {
 
 passport.use(
   new Strategy({ usernameField: "email" }, async (email, password, cb) => {
-    console.log("appelé", email, password);
     const user = await User.find({
       email: email,
     });
@@ -81,7 +82,6 @@ passport.use(
       bcrypt.compare(password, user[2], (err, result) => {
         if (err) return cb(null, false);
         if (result) {
-          console.log("usr", user);
           return cb(null, user);
         }
         return cb("Incorrect Password");
@@ -98,8 +98,9 @@ passport.serializeUser((user, cb) => {
 passport.deserializeUser(async (id, cb) => {
   try {
     const user = await User.getData("all", id);
+    user.tasks = await User.getTasks(id);
+    user.sections = await User.getSections(id);
     if (user) {
-      console.log("user");
       cb(null, user);
     } else {
       cb(new Error("User not found"), false);

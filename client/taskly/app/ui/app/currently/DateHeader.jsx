@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 export default function DateHeader({ index }) {
   const today = new Date();
   const futureDate = new Date(today);
@@ -8,7 +10,13 @@ export default function DateHeader({ index }) {
     weekday: "long",
   };
   const dateNumber = futureDate.getDate();
-
+  const [currentHour, setCurrentHour] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentHour(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  });
   return (
     <>
       <h2 className="text-5xl font-extralight">
@@ -17,6 +25,11 @@ export default function DateHeader({ index }) {
       <h2 className="text-5xl font-bold">
         {dayLabel || futureDate.toLocaleDateString("en-EN", dateOptions)}
       </h2>
+      <div>
+        <span className="text-xl">
+          {currentHour.getHours() + ":" + currentHour.getMinutes()}
+        </span>
+      </div>
     </>
   );
 }
