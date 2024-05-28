@@ -17,7 +17,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
- 
+
 // CORS options
 const corsOptions = {
   origin: "http://localhost:3000", // Allow only requests from this origin
@@ -93,9 +93,15 @@ passport.use(
 );
 
 passport.serializeUser((user, cb) => {
+  console.log("====================================");
+  console.log("serialize");
+  console.log("====================================");
   cb(null, user[0]);
 });
 passport.deserializeUser(async (id, cb) => {
+  console.log("====================================");
+  console.log("deserialize");
+  console.log("====================================");
   try {
     const user = await User.getData("all", id);
     user.tasks = await User.getTasks(id);

@@ -17,6 +17,9 @@ export default function SectionContainer() {
   }, [user, loading]);
   const [tasks, setTasks] = useState([]);
   const [sections, setSections] = useState([]);
+  // const [taskMenuExpanded, setTaskMenuExpanded] = useState(false); pas besoin si ?
+  const [activeTaskId, setActiveTaskId] = useState(null);
+
   const areSameDay = (date1String, date2) => {
     const date1 = new Date(date1String);
 
@@ -26,35 +29,50 @@ export default function SectionContainer() {
       date1.getUTCDate() === date2.getUTCDate()
     );
   };
+  const expandTask = (taskId) => {
+    console.log("ho");
+    setActiveTaskId(taskId);
+    console.log(activeTaskId);
+  };
+
   return (
-    <div className="w-full h-full flex">
-      {Array.isArray(sections) &&
-        sections.map((section, index) => {
-          const hasLinkedTasks = tasks.some(
-            (task) => task.linked_section === section.id
-          );
+    <>
+      {/* <TaskMenu id={activeTaskId} /> euhh pas au bon endroit mdrr */}
+      <div className="w-full h-[80%] flex">
+        {Array.isArray(sections) &&
+          sections.map((section, index) => {
+            const hasLinkedTasks = tasks.some(
+              (task) => task.linked_section === section.id
+            );
 
-          if (!hasLinkedTasks) return null;
+            if (!hasLinkedTasks) return null;
 
-          return (
-            <div
-              key={index}
-              className="flex flex-col h-full items-start justify-start p-10 gap-8 overflow-x-scroll"
-            >
-              <h1 className="font-bold text-4xl">{section.name}</h1>
-              {tasks && tasks.length > 0 ? (
-                tasks.map((task) => {
-                  if (task.linked_section === section.id) {
-                    return <Task task={task} key={task.id} />;
-                  }
-                  return null;
-                })
-              ) : (
-                <p>You do not have any task due for this date</p>
-              )}
-            </div>
-          );
-        })}
-    </div>
+            return (
+              <div
+                key={index}
+                className="flex flex-col h-full items-start justify-start p-10 gap-8 overflow-x-scroll"
+              >
+                <h1 className="font-bold text-4xl">{section.name}</h1>
+                {tasks && tasks.length > 0 ? (
+                  tasks.map((task) => {
+                    if (task.linked_section === section.id) {
+                      return (
+                        <Task
+                          task={task}
+                          key={task.id}
+                          onTaskClick={expandTask}
+                        />
+                      );
+                    }
+                    return null;
+                  })
+                ) : (
+                  <p>You do not have any task due for this date</p>
+                )}
+              </div>
+            );
+          })}
+      </div>
+    </>
   );
 }

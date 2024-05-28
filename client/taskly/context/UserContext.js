@@ -11,6 +11,9 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("====================================");
+    console.log("useEffect useUser");
+    console.log("====================================");
     const fetchUser = async () => {
       try {
         const response = await axios.get(`${baseUrl}/user/me`, {
@@ -30,6 +33,9 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   const login = async (data) => {
+    console.log("====================================");
+    console.log("login userContext");
+    console.log("====================================");
     try {
       const response = await axios.post(`${baseUrl}/users/login`, data, {
         withCredentials: true,
@@ -52,6 +58,9 @@ export const UserProvider = ({ children }) => {
   };
 
   const logout = () => {
+    console.log("====================================");
+    console.log("log out userContext");
+    console.log("====================================");
     setUser(null);
   };
 
@@ -79,8 +88,21 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const addTask = async (user, taskData) => {
+    console.log("task add", taskData);
+    try {
+      await axios.post(`${baseUrl}/tasks/add`, {
+        taskData: taskData,
+        user: user,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
   return (
-    <UserContext.Provider value={{ user, login, loading, logout, modifyTask }}>
+    <UserContext.Provider
+      value={{ user, login, loading, logout, modifyTask, addTask }}
+    >
       {children}
     </UserContext.Provider>
   );

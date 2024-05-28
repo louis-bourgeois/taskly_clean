@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Blur from "ui/app/Blur";
 import NavButton from "ui/app/NavButton";
+import { MenuContext } from "../../../context/MenuContext";
 import { useUser } from "../../../context/UserContext";
+import AddMenu from "./Add Menu/AddMenu";
 import MainMenu from "./Menu/MainMenu";
 export default function Navbar() {
   const router = useRouter();
@@ -11,13 +13,19 @@ export default function Navbar() {
   const [title, setTitle] = useState("Welcome");
   const [name, setName] = useState("guest");
   const [showMenu, setShowMenu] = useState(false);
+  const { isAddMenuOpen, toggleAddMenu } = useContext(MenuContext);
   const [showContentMenu, setShowContentMenu] = useState(false);
   const [marginTop, setMarginTop] = useState(0);
   const [height, setHeight] = useState(0);
   const elementRef = useRef(null);
   const containerRef = useRef(null);
+
   const updateTitle = () => {
     setName(user.first_name);
+  };
+
+  const handleAddMenuClick = () => {
+    toggleAddMenu(!isAddMenuOpen);
   };
 
   const handlePPclick = () => {
@@ -99,7 +107,8 @@ export default function Navbar() {
         marginTop={marginTop}
         height={height}
         name={name}
-      ></MainMenu>
+      />
+      <AddMenu visibility={isAddMenuOpen} />
       <ul
         className={`flex items-center justify-between`}
         style={{
@@ -146,7 +155,7 @@ export default function Navbar() {
               <path d="M3.624,15a8.03,8.03,0,0,0,10.619.659l5.318,5.318a1,1,0,0,0,1.414-1.414l-5.318-5.318A8.04,8.04,0,0,0,3.624,3.624,8.042,8.042,0,0,0,3.624,15Zm1.414-9.96a6.043,6.043,0,1,1-1.77,4.274A6,6,0,0,1,5.038,5.038Z"></path>
             </svg>
           </NavButton>
-          <NavButton flexShrinkGrow styles="w-1/2">
+          <NavButton flexShrinkGrow styles="w-1/2" onClick={handleAddMenuClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"

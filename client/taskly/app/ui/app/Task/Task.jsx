@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "../../../../context/UserContext";
 
-export default function Task({ task }) {
+export default function Task({ task, onTaskClick }) {
   const { modifyTask, user } = useUser();
   const colors = {
     todo: "bg-white",
@@ -23,7 +23,10 @@ export default function Task({ task }) {
   };
 
   return (
-    <div className="transition-all hover:scale-105 cursor-pointer shadow-2xl rounded-2xl flex w-[325px] flex-col">
+    <div
+      onClick={() => onTaskClick(task.id)}
+      className="transition-all hover:scale-105 cursor-pointer shadow-2xl rounded-2xl flex w-[325px] flex-col"
+    >
       <div className="flex justify-left items-center py-5">
         <div
           onClick={handleTaskDoneClick}

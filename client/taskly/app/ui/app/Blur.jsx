@@ -14,12 +14,16 @@ export default function Blur({
   });
   return (
     <div
-      onClick={trigger}
+      onClick={() => {
+        if (show) {
+          trigger();
+        }
+      }}
       className={` ${styles} ${
-        fullscreen ? "absolute w-full h-full" : ""
+        fullscreen ? "absolute inset-0 w-[100vw] h-[100vh]" : ""
       } transition-opacity ease-in-out backdrop-blur-md ${
-        show ? `${bg} opacity-100` : `opacity-0`
-      } z-${show ? showZ : hideZ}`}
+        show ? `${bg} opacity-100` : `opacity-0 hidden`
+      } z-${show ? showZ : hideZ} `}
     ></div>
   );
 }
