@@ -16,7 +16,7 @@ export const UserProvider = ({ children }) => {
     console.log("====================================");
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/user/me`, {
+        const response = await axios.get(`${baseUrl}/users/me`, {
           withCredentials: true,
         });
         if (response.status === 200 && response.data.user) {

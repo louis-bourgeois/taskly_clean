@@ -10,13 +10,24 @@ export default function DateHeader({ index }) {
     weekday: "long",
   };
   const dateNumber = futureDate.getDate();
-  const [currentHour, setCurrentHour] = useState(new Date());
+
+  // State pour l'heure actuelle
+  const [currentHour, setCurrentHour] = useState(() => new Date());
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentHour(new Date());
     }, 1000);
+
     return () => clearInterval(timer);
-  });
+  }, []);
+
+  // Formatage de l'heure
+  const formattedHour = `${currentHour.getHours()}:${currentHour
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}`;
+
   return (
     <>
       <h2 className="text-5xl font-extralight">
@@ -26,9 +37,7 @@ export default function DateHeader({ index }) {
         {dayLabel || futureDate.toLocaleDateString("en-EN", dateOptions)}
       </h2>
       <div>
-        <span className="text-xl">
-          {currentHour.getHours() + ":" + currentHour.getMinutes()}
-        </span>
+        <span className="text-xl">{formattedHour}</span>
       </div>
     </>
   );
