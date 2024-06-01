@@ -46,8 +46,6 @@ class Task {
   }
 
   async save() {
-    console.log("feefef", this);
-
     const client = await pool.connect();
 
     try {
@@ -148,8 +146,6 @@ class Task {
 
     const changes = compareObjects(currentTask, updatedTask);
 
-    console.log("d", changes);
-
     const columnsToUpdate = Object.keys(changes);
 
     const linkedSectionUpdated = columnsToUpdate.includes("linked_section");
@@ -181,13 +177,9 @@ class Task {
       if (queryParams.length > 0) {
         queryParams.push(updatedTask.id);
 
-        const sqlQuery = `UPDATE ${table} SET ${setParts.join(
-          ", "
-        )} WHERE id = $${paramIndex}`;
-
-        console.log("SQL Query:", sqlQuery);
-
-        console.log("Query Params:", queryParams);
+        const sqlQuery = `UPDATE ${table} SET ${setParts.join(", ")} WHERE ${
+          table === "task_properties" ? "task_id" : "id"
+        } = $${paramIndex}`;
 
         await pool.query(sqlQuery, queryParams);
       } else {

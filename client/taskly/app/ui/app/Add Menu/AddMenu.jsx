@@ -6,16 +6,22 @@ import Blur from "../Blur";
 import Div from "../Div";
 
 export default function AddMenu({ visibility }) {
+  const { user, addTask, tasks } = useUser();
   const { isAddMenuOpen, toggleAddMenu } = useContext(MenuContext);
-  const { user, addTask } = useUser();
+
   const [titleValue, setTitleValue] = useState("");
-  const [descriptionValue, setDescriptionValue] = useState("");
-  const [difficulty, setDifficulty] = useState(undefined);
+  const [status, setStatus] = useState("todo");
+  const [linked_section, setLinked_section] = useState("Other");
+  const [priority, setPriority] = useState(5);
+  const [dueDate, setDueDate] = useState(undefined);
   const [subTasks, setSubTasks] = useState([]);
   const [tags, setTags] = useState([]);
-  const [status, setStatus] = useState("todo");
+
+  const [descriptionValue, setDescriptionValue] = useState("");
+
   const [newTag, setNewTag] = useState("");
   const [taskArrowIsClicked, setTaskArrowIsClicked] = useState(false);
+
   const getTextSizeClass = (text) => {
     const textSizeClasses = [
       { length: 4, class: "text-7xl" },
@@ -40,16 +46,21 @@ export default function AddMenu({ visibility }) {
     }
     return "text-xl";
   };
-  const createTask = () => {
-    const data = {
-      title: titleValue,
-      description: descriptionValue,
-      subTasks: subTasks,
-      difficulty: difficulty,
-      status: status,
-    };
-    console.log(data);
-    addTask(user, data);
+  const createTask = async () => {
+    try {
+      const taskData = {
+        title: titleValue,
+        status: status,
+        linked_section: linked_section,
+        priority: priority,
+        dueDate: dueDate,
+        subtasks: subTasks,
+        tags: tags,
+      };
+      await addTask(user, taskData);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -136,13 +147,10 @@ export default function AddMenu({ visibility }) {
             </div>
             <div className="flex flex-col justify-between w-[45%] pr-[2.5%] ml-[2%] ">
               <div className=" w-full h-[70%] addMenuElement rounded-[20px]">
-                <h2 className="font-bold text-4xl p-[2%]">Difficulty</h2>
+                <h2 className="font-bold text-4xl p-[2%]">Priority</h2>
               </div>
               <button
-                onClick={() => {
-                  createTask();
-                  toggleAddMenu(!isAddMenuOpen);
-                }}
+                onClick={createTask}
                 className="transition transition-all active:scale-95 flex items-center justify-left w-full h-[25%] font-bold text-4xl addMenuElement rounded-[20px] rounded-br-[3.125vw]"
               >
                 <span className="p-[2%]">Create</span>

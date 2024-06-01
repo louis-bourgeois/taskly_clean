@@ -8,12 +8,10 @@ export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("====================================");
-    console.log("useEffect useUser");
-    console.log("====================================");
     const fetchUser = async () => {
       try {
         const response = await axios.get(`${baseUrl}/users/me`, {
@@ -21,7 +19,7 @@ export const UserProvider = ({ children }) => {
         });
         if (response.status === 200 && response.data.user) {
           setUser({ ...response.data.user });
-          console.log("u", response);
+          setTasks(response.data.user.tasks || []);
         }
       } catch (error) {
         setUser(null);
@@ -31,19 +29,17 @@ export const UserProvider = ({ children }) => {
     };
     fetchUser();
   }, []);
-
   const login = async (data) => {
-    console.log("====================================");
-    console.log("login userContext");
-    console.log("====================================");
     try {
       const response = await axios.post(`${baseUrl}/users/login`, data, {
         withCredentials: true,
       });
       if (response.status === 200) {
-        console.log("ress", response.data.user);
-
+        console.log("====================================");
+        console.log(response);
+        console.log("====================================");
         setUser({ ...response.data.user[1], ...response.data.user[3] });
+        setTasks(response.data.user[1].tasks || []);
         return response;
       }
     } catch (error) {
@@ -58,14 +54,11 @@ export const UserProvider = ({ children }) => {
   };
 
   const logout = () => {
-    console.log("====================================");
-    console.log("log out userContext");
-    console.log("====================================");
     setUser(null);
+    setTasks(null);
   };
 
   const modifyTask = async (task, user, action) => {
-    console.log("ok", task);
     try {
       switch (action) {
         case "post":
@@ -89,19 +82,31 @@ export const UserProvider = ({ children }) => {
   };
 
   const addTask = async (user, taskData) => {
-    console.log("task add", taskData);
     try {
-      await axios.post(`${baseUrl}/tasks/add`, {
+      const response = await axios.post(`${baseUrl}/tasks/add`, {
         taskData: taskData,
         user: user,
       });
+
+      if (response.status === 200 && response.data.tasks) {
+        setTasks(() => {
+          const updatedTasks = response.data.tasks;
+          console.log("Updated Tasks: ", updatedTasks);
+          return updatedTasks;
+        });
+      } else {
+        console.log("response : ", response);
+        console.error("Error: No task data in response", response.data);
+      }
     } catch (error) {
+      console.error("Error adding task:", error);
       throw error;
     }
   };
+
   return (
     <UserContext.Provider
-      value={{ user, login, loading, logout, modifyTask, addTask }}
+      value={{ user, login, loading, logout, tasks, modifyTask, addTask }}
     >
       {children}
     </UserContext.Provider>

@@ -18,6 +18,7 @@ export async function updateTask(req, res) {
 export async function addTask(req, res) {
   try {
     const { taskData: newTaskData } = req.body;
+    console.log(newTaskData);
     const user = req.body.user;
     const found_user = await User.findId(undefined, user.email, undefined);
     const linked_section = newTaskData.linked_section || "";
@@ -25,25 +26,35 @@ export async function addTask(req, res) {
     const priority = newTaskData.priority || undefined;
     const creationDate = now();
     console.log("====================================");
-    console.log(user_id);
+    console.log(
+      user_id,
+      newTaskData.title,
+      creationDate,
+      newTaskData.status,
+      linked_section,
+      priority,
+      newTaskData.dueDate,
+      newTaskData.subtasks,
+      newTaskData.tags
+    );
     console.log("====================================");
     const task = new Task(
       user_id,
       newTaskData.title,
       creationDate,
       newTaskData.status,
-
-      newTaskData.dueDate,
-
-      newTaskData.subtasks,
-
+      linked_section,
       priority,
-      linked_section
+      newTaskData.dueDate,
+      newTaskData.subtasks,
+      newTaskData.tags
     );
 
     await task.save();
-
-    res.status(200).json({ message: "Task added successfully" });
+    const user_tasks = await Task.find(user_id);
+    res
+      .status(200)
+      .json({ message: "Task added successfully", tasks: user_tasks });
   } catch (error) {
     console.error("Error adding task:", error);
 
