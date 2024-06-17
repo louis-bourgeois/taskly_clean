@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-export default function DateHeader({ index }) {
-  const today = new Date();
-  const futureDate = new Date(today);
-  futureDate.setDate(today.getDate() + index);
-  const dayLabel = index === 0 ? "Today" : index === 1 ? "Tomorrow" : undefined;
+const DateHeader = ({ index }) => {
+  // Mémorisation des dates et labels constants
+  const { futureDate, dayLabel, dateNumber } = useMemo(() => {
+    const today = new Date();
+    const futureDate = new Date(today);
+    futureDate.setDate(today.getDate() + index);
 
-  const dateOptions = {
-    weekday: "long",
-  };
-  const dateNumber = futureDate.getDate();
+    const dayLabel =
+      index === 0 ? "Today" : index === 1 ? "Tomorrow" : undefined;
+    const dateNumber = futureDate.getDate();
+
+    return { futureDate, dayLabel, dateNumber };
+  }, [index]);
 
   // State pour l'heure actuelle
   const [currentHour, setCurrentHour] = useState(() => new Date());
@@ -23,10 +26,14 @@ export default function DateHeader({ index }) {
   }, []);
 
   // Formatage de l'heure
-  const formattedHour = `${currentHour.getHours()}:${currentHour
-    .getMinutes()
-    .toString()
-    .padStart(2, "0")}`;
+  const formattedHour = useMemo(() => {
+    return `${currentHour.getHours()}:${currentHour
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")}`;
+  }, [currentHour]);
+
+  const dateOptions = useMemo(() => ({ weekday: "long" }), []);
 
   return (
     <>
@@ -41,4 +48,7 @@ export default function DateHeader({ index }) {
       </div>
     </>
   );
-}
+};
+
+// Utilisation de React.memo pour éviter les re-rendus inutiles
+export default React.memo(DateHeader);

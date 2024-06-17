@@ -5,8 +5,8 @@ import Blur from "ui/app/Blur";
 import NavButton from "ui/app/NavButton";
 import { MenuContext } from "../../../context/MenuContext";
 import { useUser } from "../../../context/UserContext";
-import AddMenu from "./Add Menu/AddMenu";
 import MainMenu from "./Menu/MainMenu";
+import TaskMenu from "./TaskMenu/TaskMenu";
 export default function Navbar() {
   const router = useRouter();
   const { user, loading } = useUser(); // Moved useUser hook to the top level
@@ -108,7 +108,7 @@ export default function Navbar() {
         height={height}
         name={name}
       />
-      <AddMenu visibility={isAddMenuOpen} />
+      <TaskMenu visibility={isAddMenuOpen} />
       <ul
         className={`flex items-center justify-between`}
         style={{
@@ -155,6 +155,7 @@ export default function Navbar() {
               <path d="M3.624,15a8.03,8.03,0,0,0,10.619.659l5.318,5.318a1,1,0,0,0,1.414-1.414l-5.318-5.318A8.04,8.04,0,0,0,3.624,3.624,8.042,8.042,0,0,0,3.624,15Zm1.414-9.96a6.043,6.043,0,1,1-1.77,4.274A6,6,0,0,1,5.038,5.038Z"></path>
             </svg>
           </NavButton>
+
           <NavButton flexShrinkGrow styles="w-1/2" onClick={handleAddMenuClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

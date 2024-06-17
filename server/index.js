@@ -78,6 +78,7 @@ passport.use(
     const user = await User.find({
       email: email,
     });
+    console.log(user[2]);
     if (user) {
       bcrypt.compare(password, user[2], (err, result) => {
         if (err) return cb(null, false);

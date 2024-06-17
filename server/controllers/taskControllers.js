@@ -1,6 +1,7 @@
 import Task from "../models/Task.js";
 import User from "../models/User.js";
 import { now } from "../utils/now.js";
+import { isUUID } from "../utils/validate.js";
 export async function updateTask(req, res) {
   try {
     const { task } = req.body;
@@ -60,4 +61,18 @@ export async function addTask(req, res) {
 
     res.status(500).json({ message: "Error adding task" });
   }
+}
+export async function deleteTask(req, res) {
+  console.log(req);
+  console.log("yeas");
+  const uuid = req.params.id;
+  console.log(uuid);
+  const uuid_isOK = isUUID(uuid);
+  console.log("====================================");
+  console.log(uuid_isOK);
+  console.log("====================================");
+  if (uuid_isOK) {
+    await Task.delete(uuid);
+  }
+  res.sendStatus(200);
 }

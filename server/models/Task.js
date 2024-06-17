@@ -133,7 +133,33 @@ class Task {
     }
   }
 
-  static async delete() {}
+  static async delete(taskId) {
+    const client = await pool.connect();
+    console.log("ok");
+    try {
+      await client.query("BEGIN");
+
+      // Supprimer les propriétés de la tâche
+      const deleteTaskPropertiesQuery =
+        "DELETE FROM task_properties WHERE task_id = $1";
+
+      await client.query(deleteTaskPropertiesQuery, [taskId]);
+
+      // Supprimer la tâche elle-même
+      const deleteTaskQuery = "DELETE FROM task WHERE id = $1";
+
+      await client.query(deleteTaskQuery, [taskId]);
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      console.error("Error deleting task:", error);
+
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
 
   static async update(updatedTask) {
     const [currentTask] = await this.find(undefined, updatedTask.id);

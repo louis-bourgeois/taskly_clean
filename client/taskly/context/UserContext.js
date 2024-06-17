@@ -104,9 +104,33 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const deleteTask = async (id) => {
+    console.log("====================================");
+    console.log("azepplelelpelo");
+    console.log("====================================");
+    try {
+      const response = await axios.delete(`${baseUrl}/tasks/delete/${id}`);
+      if (response.status === 200) {
+        setTasks((preveTasks) => preveTasks.filter((task) => task.id !== id));
+      }
+    } catch (error) {
+      console.error("Error removing task " + id + " : " + error);
+      throw error;
+    }
+  };
+
   return (
     <UserContext.Provider
-      value={{ user, login, loading, logout, tasks, modifyTask, addTask }}
+      value={{
+        user,
+        login,
+        loading,
+        logout,
+        tasks,
+        modifyTask,
+        addTask,
+        deleteTask,
+      }}
     >
       {children}
     </UserContext.Provider>
