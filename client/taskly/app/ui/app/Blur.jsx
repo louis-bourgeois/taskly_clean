@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTask } from "../../../context/TaskContext";
 
 export default function Blur({
   trigger,
@@ -9,6 +10,7 @@ export default function Blur({
   hideZ,
   styles,
 }) {
+  const { setActiveTask } = useTask();
   useEffect(() => {
     document.body.style.overflowY = "hidden";
   });

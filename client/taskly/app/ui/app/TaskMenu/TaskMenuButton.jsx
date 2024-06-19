@@ -1,4 +1,5 @@
 export default function TaskMenuButton({
+  disabled = false,
   flex = true,
   children,
   width,
@@ -10,6 +11,7 @@ export default function TaskMenuButton({
 }) {
   return (
     <button
+      disabled={disabled}
       onClick={onClick}
       className={`transition transition-scale active:scale-95 addMenuElement ${
         flex && "flex"

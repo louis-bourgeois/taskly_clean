@@ -5,7 +5,7 @@ import Blur from "ui/app/Blur";
 import NavButton from "ui/app/NavButton";
 import { MenuContext } from "../../../context/MenuContext";
 import { useUser } from "../../../context/UserContext";
-import MainMenu from "./Menu/MainMenu";
+import MainMenu from "./MainMenu/MainMenu";
 import TaskMenu from "./TaskMenu/TaskMenu";
 export default function Navbar() {
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function Navbar() {
   const [title, setTitle] = useState("Welcome");
   const [name, setName] = useState("guest");
   const [showMenu, setShowMenu] = useState(false);
-  const { isAddMenuOpen, toggleAddMenu } = useContext(MenuContext);
+  const { isTaskMenuOpen, toggleTaskMenu } = useContext(MenuContext);
   const [showContentMenu, setShowContentMenu] = useState(false);
   const [marginTop, setMarginTop] = useState(0);
   const [height, setHeight] = useState(0);
@@ -24,8 +24,8 @@ export default function Navbar() {
     setName(user.first_name);
   };
 
-  const handleAddMenuClick = () => {
-    toggleAddMenu(!isAddMenuOpen);
+  const handleTaskMenuClick = () => {
+    toggleTaskMenu(!isTaskMenuOpen);
   };
 
   const handlePPclick = () => {
@@ -108,7 +108,7 @@ export default function Navbar() {
         height={height}
         name={name}
       />
-      <TaskMenu visibility={isAddMenuOpen} />
+
       <ul
         className={`flex items-center justify-between`}
         style={{
@@ -156,7 +156,7 @@ export default function Navbar() {
             </svg>
           </NavButton>
 
-          <NavButton flexShrinkGrow styles="w-1/2" onClick={handleAddMenuClick}>
+          <NavButton flexShrinkGrow styles="w-1/2" onClick={handleTaskMenuClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"

@@ -1,6 +1,8 @@
 "use client";
 import Task from "@/ui/app/Task/Task";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+
+import { MenuContext } from "../../../../context/MenuContext";
 import { useTask } from "../../../../context/TaskContext";
 import { useUser } from "../../../../context/UserContext";
 
@@ -8,20 +10,12 @@ export default function SectionContainer() {
   const { user, tasks, loading } = useUser();
   const { activeTask, setActiveTask } = useTask();
   const [sections, setSections] = useState([]);
-
+  const { isTaskMenuOpen, toggleTaskMenu } = useContext(MenuContext);
   useEffect(() => {
     if (!loading && user) {
       setSections(user.sections || []);
     }
   }, [user, loading]);
-
-  useEffect(() => {
-    console.log("Tasks updated: ", tasks);
-  }, [tasks]);
-
-  useEffect(() => {
-    console.log("active task: ", activeTask);
-  }, [activeTask]);
 
   const areSameDay = (date1String, date2) => {
     const date1 = new Date(date1String);
@@ -35,9 +29,8 @@ export default function SectionContainer() {
   const expandTask = (taskId) => {
     if (taskId !== activeTask) {
       setActiveTask(taskId);
-    } else {
-      setActiveTask(null);
     }
+    toggleTaskMenu();
   };
   return (
     <div className="w-full h-[80%] flex">

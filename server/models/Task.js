@@ -92,6 +92,16 @@ class Task {
       await client.query("ROLLBACK");
 
       console.error("Error saving task:", e);
+
+      switch (e.code) {
+        case "23505":
+          throw new Error(
+            `A task with the title ${this.title} already exists. Please use a unique title!`
+          );
+        case "22001":
+          throw new Error("The title is too long, please make sure it doesn't exceed 32 characters!")
+      }
+      throw e;
     } finally {
       client.release();
     }

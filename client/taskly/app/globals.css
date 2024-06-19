@@ -139,3 +139,33 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
 }
+.text-shadow-01 {
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.hide {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 2s ease-in-out, visibility 2s ease-in-out;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+}
+
+.scroll-hide::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Firefox */
+.scroll-hide {
+  scrollbar-width: none; /* Définir la largeur de la scrollbar sur "none" pour Firefox */
+}
+
+/* Pour que cette méthode soit complètement responsive, on peut ajouter un padding-right à la div */
+.scroll-hide {
+  padding-right: 20px; /* Ajuster en fonction de la largeur que prendrait la scrollbar */
+  box-sizing: content-box; /* Pour que le padding n'affecte pas la largeur totale */
+}

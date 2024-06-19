@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
+import { useError } from "./ErrorContext"; // Import the ErrorContext
 
 const UserContext = createContext();
 const baseUrl = "http://localhost:3001/api";
@@ -10,6 +11,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { handleError } = useError(); // Use handleError from ErrorContext
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -29,21 +31,18 @@ export const UserProvider = ({ children }) => {
     };
     fetchUser();
   }, []);
+
   const login = async (data) => {
     try {
       const response = await axios.post(`${baseUrl}/users/login`, data, {
         withCredentials: true,
       });
       if (response.status === 200) {
-        console.log("====================================");
-        console.log(response);
-        console.log("====================================");
         setUser({ ...response.data.user[1], ...response.data.user[3] });
         setTasks(response.data.user[1].tasks || []);
         return response;
       }
     } catch (error) {
-      console.error("Login error:", error);
       return {
         status: error.response?.status || 500,
         data: { message: error.message },
@@ -64,11 +63,7 @@ export const UserProvider = ({ children }) => {
         case "post":
           await axios.post(
             `${baseUrl}/tasks/update`,
-            {
-              // la requête doit retourner les nouvelles data de la task, puis je remplace le user, avec la task upgrade dans cette fonction.
-              task: task,
-              action: action,
-            },
+            { task, action },
             { withCredentials: true }
           );
           break;
@@ -83,38 +78,31 @@ export const UserProvider = ({ children }) => {
 
   const addTask = async (user, taskData) => {
     try {
-      const response = await axios.post(`${baseUrl}/tasks/add`, {
-        taskData: taskData,
-        user: user,
-      });
+      const response = await axios.post(
+        `${baseUrl}/tasks/add`,
+        { taskData, user },
+        { withCredentials: true }
+      );
 
       if (response.status === 200 && response.data.tasks) {
-        setTasks(() => {
-          const updatedTasks = response.data.tasks;
-          console.log("Updated Tasks: ", updatedTasks);
-          return updatedTasks;
-        });
+        setTasks(response.data.tasks);
       } else {
-        console.log("response : ", response);
         console.error("Error: No task data in response", response.data);
       }
     } catch (error) {
-      console.error("Error adding task:", error);
+      console.error("error");
+      handleError(error);
       throw error;
     }
   };
 
   const deleteTask = async (id) => {
-    console.log("====================================");
-    console.log("azepplelelpelo");
-    console.log("====================================");
     try {
       const response = await axios.delete(`${baseUrl}/tasks/delete/${id}`);
       if (response.status === 200) {
-        setTasks((preveTasks) => preveTasks.filter((task) => task.id !== id));
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
       }
     } catch (error) {
-      console.error("Error removing task " + id + " : " + error);
       throw error;
     }
   };

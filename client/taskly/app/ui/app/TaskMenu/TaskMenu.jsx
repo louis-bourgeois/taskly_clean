@@ -1,6 +1,7 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
 import { MenuContext } from "../../../../context/MenuContext";
+import { useTask } from "../../../../context/TaskContext";
 import { useUser } from "../../../../context/UserContext";
 import Blur from "../Blur";
 import Div from "../Div";
@@ -11,7 +12,7 @@ import TaskMenuSectionContainer from "./TaskMenuSectionContainer";
 export default function TaskMenu({ visibility, id = null }) {
   const { user, addTask, modifyTask, deleteTask, tasks } = useUser();
   const { isTaskMenuOpen, toggleTaskMenu } = useContext(MenuContext);
-
+  const { setActiveTask } = useTask();
   const [task, setTask] = useState(null);
   const [titleValue, setTitleValue] = useState("");
   const [status, setStatus] = useState("todo");
@@ -23,11 +24,30 @@ export default function TaskMenu({ visibility, id = null }) {
   const [descriptionValue, setDescriptionValue] = useState("");
   const [newTag, setNewTag] = useState("");
   const [taskArrowIsClicked, setTaskArrowIsClicked] = useState(false);
+  const [canSubmit, setCanSubmit] = useState(false);
+  const [error, setError] = useState(true);
+  useEffect(() => {
+    if (!isTaskMenuOpen) {
+      setTitleValue("");
+      setStatus("todo");
+      setLinked_section("Other");
+      setPriority(5);
+      setDueDate(undefined);
+      setSubTasks([]);
+      setTags([]);
+      setDescriptionValue("");
+      setActiveTask(null);
+      setTask(null);
+    }
+  }, [isTaskMenuOpen]);
 
   useEffect(() => {
     if (id) {
       const foundTask = tasks.find((task) => task.id === id);
       setTask(foundTask);
+      setCanSubmit(true);
+    } else {
+      setCanSubmit(false);
     }
   }, [tasks, id]);
 
@@ -42,8 +62,6 @@ export default function TaskMenu({ visibility, id = null }) {
       setTags(task.tags ?? []);
       setDescriptionValue(task.description ?? "");
     }
-    console.log("Priority from task:", task?.priority); // Debugging log
-    console.log("Current priority state:", priority); // Debugging log
   }, [task]);
 
   // Handle title input change
@@ -52,7 +70,20 @@ export default function TaskMenu({ visibility, id = null }) {
     setTitleValue(newValue);
     if (id) {
       task.title = newValue;
-      modifyTask(task, user, "post");
+      setCanSubmit(true);
+      try {
+        const response = modifyTask(task, user, "post");
+      } catch (error) {
+        console.error(error);
+        switch (error.response.status) {
+          case 400:
+            setError("Title already in use");
+        }
+      }
+      return;
+    }
+    if (!task) {
+      setCanSubmit(!!newValue.length);
     }
   };
 
@@ -61,7 +92,7 @@ export default function TaskMenu({ visibility, id = null }) {
     setPriority(value);
     if (id) {
       task.priority = value;
-      console.log("Updated task:", task); // Debugging log
+
       modifyTask(task, user, "post");
     }
   };
@@ -107,7 +138,6 @@ export default function TaskMenu({ visibility, id = null }) {
 
   const delTask = () => {
     try {
-      console.log("eap");
       deleteTask(id);
     } catch (e) {
       console.error;
@@ -240,7 +270,11 @@ export default function TaskMenu({ visibility, id = null }) {
               </TaskMenuSectionContainer>
 
               <TaskMenuButton
-                onClick={id ? delTask : createTask}
+                disabled={!canSubmit}
+                onClick={() => {
+                  id ? delTask() : createTask();
+                  toggleTaskMenu(!isTaskMenuOpen);
+                }}
                 moreRoundedCorners="br"
                 othersStyles={`w-full h-[25%] items-center justify-left font-bold text-4xl
                 `}

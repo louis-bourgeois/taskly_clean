@@ -26,19 +26,7 @@ export async function addTask(req, res) {
     const user_id = found_user[0][0];
     const priority = newTaskData.priority || undefined;
     const creationDate = now();
-    console.log("====================================");
-    console.log(
-      user_id,
-      newTaskData.title,
-      creationDate,
-      newTaskData.status,
-      linked_section,
-      priority,
-      newTaskData.dueDate,
-      newTaskData.subtasks,
-      newTaskData.tags
-    );
-    console.log("====================================");
+
     const task = new Task(
       user_id,
       newTaskData.title,
@@ -59,18 +47,27 @@ export async function addTask(req, res) {
   } catch (error) {
     console.error("Error adding task:", error);
 
-    res.status(500).json({ message: "Error adding task" });
+    if (error.message.includes("A task with the title")) {
+      res
+        .status(400)
+        .json({ title: "Title already used", subtitle: error.message });
+    } else if (error.message.includes("title is too long")) {
+      res.status(400).json({
+        title: "The new task's title is too long",
+        subtitle: error.message,
+      });
+    } else {
+      res
+        .status(500)
+        .json({ title: "Internal Server Error", subtitle: error.message }); // Changed from 400 to 500 and added JSON response
+    }
   }
 }
 export async function deleteTask(req, res) {
-  console.log(req);
-  console.log("yeas");
   const uuid = req.params.id;
-  console.log(uuid);
+
   const uuid_isOK = isUUID(uuid);
-  console.log("====================================");
-  console.log(uuid_isOK);
-  console.log("====================================");
+
   if (uuid_isOK) {
     await Task.delete(uuid);
   }
