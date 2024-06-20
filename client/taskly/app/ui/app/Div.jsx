@@ -3,10 +3,12 @@ export default function Div({
   styles,
   absolute,
   notBorder,
-  ...props // Capturer les attributs supplémentaires
+  ref,
+  ...props
 }) {
   return (
     <div
+      ref={ref}
       className={`${styles} ${absolute ? "absolute" : ""} shadow-xl ${
         notBorder ? "" : "border border-blue"
       }`}

@@ -1,9 +1,10 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MenuContext } from "../../../../context/MenuContext";
 import { useTask } from "../../../../context/TaskContext";
 import { useUser } from "../../../../context/UserContext";
 import Blur from "../Blur";
+import DatePicker from "../DatePicker/DatePicker";
 import Div from "../Div";
 import { Counter } from "./Counter";
 import TaskMenuButton from "./TaskMenuButton";
@@ -13,6 +14,7 @@ export default function TaskMenu({ visibility, id = null }) {
   const { user, addTask, modifyTask, deleteTask, tasks } = useUser();
   const { isTaskMenuOpen, toggleTaskMenu } = useContext(MenuContext);
   const { setActiveTask } = useTask();
+
   const [task, setTask] = useState(null);
   const [titleValue, setTitleValue] = useState("");
   const [status, setStatus] = useState("todo");
@@ -26,6 +28,9 @@ export default function TaskMenu({ visibility, id = null }) {
   const [taskArrowIsClicked, setTaskArrowIsClicked] = useState(false);
   const [canSubmit, setCanSubmit] = useState(false);
   const [error, setError] = useState(true);
+
+  const taskTitleRef = useRef(null);
+
   useEffect(() => {
     if (!isTaskMenuOpen) {
       setTitleValue("");
@@ -50,6 +55,12 @@ export default function TaskMenu({ visibility, id = null }) {
       setCanSubmit(false);
     }
   }, [tasks, id]);
+
+  useEffect(() => {
+    if (visibility && taskTitleRef.current) {
+      taskTitleRef.current.focus();
+    }
+  });
 
   useEffect(() => {
     if (task) {
@@ -97,6 +108,10 @@ export default function TaskMenu({ visibility, id = null }) {
     }
   };
 
+  const handleDateSelect = (date) => {
+    setDueDate(date);
+    console.log(date);
+  };
   // Determine text size class based on text length
   const getTextSizeClass = (text) => {
     const textSizeClasses = [
@@ -155,14 +170,15 @@ export default function TaskMenu({ visibility, id = null }) {
       />
 
       <Div
-        styles={`flex border border-[rgba(0,0,0,0.15)] gap-[0.5%] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white z-[80] fontMenu transition-all duration-300 rounded-[3.125vw] ${
+        styles={`glass-morphism flex border gap-[0.5%] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  z-[80] fontMenu transition-all duration-300 rounded-[3.125vw] py-[1.5vh] px-[1.3227%] ${
           visibility ? "w-[63vw] h-[64vh] opacity-100" : "w-0 h-0 opacity-0"
         }`}
         notBorder
       >
-        <div className="flex flex-col w-[30%] rounded-l-[3.125vw] justify-left">
+        <div className="flex flex-col w-[30%] rounded-l-[3.125vw] my-[1.4290277778vh] justify-left">
           <div className="h-[25%] flex justify-center items-center">
             <input
+              ref={taskTitleRef}
               type="text"
               placeholder={id ? titleValue : "Title"}
               value={titleValue}
@@ -176,7 +192,7 @@ export default function TaskMenu({ visibility, id = null }) {
           <div
             className={`${
               id ? "" : " flex flex-col"
-            } h-[75%] rounded-bl-[3.125vw] px-[5%] pb-[2.2%] rounded-[20px] justify-left gap-[8.6%]`}
+            } h-[75%] rounded-bl-[3.125vw] pr-[5%] rounded-[20px] justify-end gap-[8.6%]`}
           >
             {!id && (
               <TaskMenuSectionContainer othersStyles="rounded-full justify-between items-center h-[12%]">
@@ -226,15 +242,25 @@ export default function TaskMenu({ visibility, id = null }) {
           </div>
         </div>
 
-        <div className="flex handle flex-col w-[70%] rounded-br-[3.125vw]">
-          <TaskMenuSectionContainer
-            moreRoundedCorners="tr"
-            othersStyles="font-bold text-4xl h-[57%]"
-          >
-            <h2 className="p-[2%]">Subtask(s)</h2>
-          </TaskMenuSectionContainer>
-
-          <div className="flex justify-left h-[40%] pt-[2%]">
+        <div className="flex flex-col w-[70%] justify-between my-[1.4290277778vh]  rounded-tr-[3.125vw]">
+          <div className="flex items-center justify-between h-[57%]">
+            <TaskMenuSectionContainer
+              flex={false}
+              othersStyles="flex flex-col justify-between items-center w-[55%] h-full"
+            >
+              <DatePicker
+                onDateSelect={handleDateSelect}
+                selectedDate={dueDate}
+              />
+            </TaskMenuSectionContainer>
+            <TaskMenuSectionContainer
+              moreRoundedCorners="tr"
+              othersStyles="h-full w-[45%]  ml-[2%]"
+            >
+              <h2 className="p-[2%] font-bold text-4xl">Subtask(s)</h2>
+            </TaskMenuSectionContainer>
+          </div>
+          <div className="flex justify-left h-[40%] pt-[2%] ">
             <TaskMenuSectionContainer
               flex={false}
               othersStyles="font-bold text-4xl w-[55%]"
@@ -250,10 +276,9 @@ export default function TaskMenu({ visibility, id = null }) {
               ></textarea>
             </TaskMenuSectionContainer>
 
-            <div className="flex flex-col justify-between w-[45%] pr-[2.5%] ml-[2%]">
+            <div className="flex flex-col justify-between w-[45%] ml-[2%]">
               <TaskMenuSectionContainer
                 flex={false}
-                moreRoundedCorners={id ? "br" : ""}
                 othersStyles={`w-full h-[70%]`}
               >
                 <h2 className="font-bold text-4xl p-[2%]">Priority</h2>

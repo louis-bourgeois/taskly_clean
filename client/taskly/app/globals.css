@@ -93,7 +93,9 @@ a:active {
 
   padding: 10px; /* Adjust padding to create space for the pseudo-element border */
 
-  background: white; /* Background color of your content */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 
   z-index: 0; /* Ensure content stays on top */
   box-shadow: -2px 6px 6px rgba(0, 122, 255, 0.25);
@@ -151,9 +153,20 @@ input[type="number"] {
 
 .fade-out {
   opacity: 0;
-  transition: opacity 2s ease-in-out;
+  transition: opacity 800ms ease-in-out;
 }
 
+.scroll-y-hide::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Firefox */
+.scroll-y-hide {
+  scrollbar-width: none;
+  padding-right: 20px;
+  box-sizing: content-box;
+}
 .scroll-hide::-webkit-scrollbar {
   width: 0;
   height: 0;
@@ -161,11 +174,16 @@ input[type="number"] {
 
 /* Firefox */
 .scroll-hide {
-  scrollbar-width: none; /* Définir la largeur de la scrollbar sur "none" pour Firefox */
+  scrollbar-width: none;
+  box-sizing: content-box;
 }
-
-/* Pour que cette méthode soit complètement responsive, on peut ajouter un padding-right à la div */
-.scroll-hide {
-  padding-right: 20px; /* Ajuster en fonction de la largeur que prendrait la scrollbar */
-  box-sizing: content-box; /* Pour que le padding n'affecte pas la largeur totale */
+.glass-morphism {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0)
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }

@@ -23,7 +23,7 @@ export default function Blur({
       }}
       className={` ${styles} ${
         fullscreen ? "absolute inset-0 w-[100vw] h-[100vh]" : ""
-      } transition-opacity ease-in-out backdrop-blur-md ${
+      } transition-opacity ease-in-out backdrop-blur ${
         show ? `${bg} opacity-100` : `opacity-0 hidden`
       } z-${show ? showZ : hideZ} `}
     ></div>

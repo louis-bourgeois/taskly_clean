@@ -11,7 +11,7 @@ export default function MainMenu({
 }) {
   return (
     <Div
-      styles={`absolute bg-white z-20 fontMenu top-0 left-0 flex flex-col justify-between rounded-[3.125vw] rounded-tl-[0] transition-all ease-in-out duration-500 ${
+      styles={`glass-morphism absolute bg-[rgba(255,255,255,0.1)] z-20 fontMenu top-0 left-0 flex flex-col justify-between rounded-[3.125vw] rounded-tl-[0] transition-all ease-in-out duration-500 ${
         showMenu ? "w-[17vw] opacity-100" : "w-0 h-0 opacity-0"
       }`}
       absolute

@@ -208,7 +208,7 @@ export default function FormMenu({
             <PasswordInputContainer
               name="password"
               placeholder={`${
-                action === "Log in "
+                action === "Log in"
                   ? "Enter your password"
                   : action === "Sign up" && "Enter a strong password"
               }`}

@@ -1,30 +1,22 @@
 "use client";
 import Task from "@/ui/app/Task/Task";
+import { format } from "date-fns";
 import { useContext, useEffect, useState } from "react";
-
 import { MenuContext } from "../../../../context/MenuContext";
 import { useTask } from "../../../../context/TaskContext";
 import { useUser } from "../../../../context/UserContext";
 
-export default function SectionContainer() {
+export default function SectionContainer({ date }) {
   const { user, tasks, loading } = useUser();
   const { activeTask, setActiveTask } = useTask();
   const [sections, setSections] = useState([]);
   const { isTaskMenuOpen, toggleTaskMenu } = useContext(MenuContext);
+
   useEffect(() => {
     if (!loading && user) {
       setSections(user.sections || []);
     }
   }, [user, loading]);
-
-  const areSameDay = (date1String, date2) => {
-    const date1 = new Date(date1String);
-    return (
-      date1.getUTCFullYear() === date2.getUTCFullYear() &&
-      date1.getUTCMonth() === date2.getUTCMonth() &&
-      date1.getUTCDate() === date2.getUTCDate()
-    );
-  };
 
   const expandTask = (taskId) => {
     if (taskId !== activeTask) {
@@ -32,6 +24,7 @@ export default function SectionContainer() {
     }
     toggleTaskMenu();
   };
+
   return (
     <div className="w-full h-[80%] flex">
       {Array.isArray(sections) &&
@@ -48,12 +41,17 @@ export default function SectionContainer() {
           return (
             <div
               key={index}
-              className="flex flex-col h-full items-start justify-start p-10 gap-8 overflow-x-scroll"
+              className="flex flex-col h-[96%] items-start justify-start p-10 gap-8 overflow-x-scroll scroll-hide"
             >
               <h1 className="font-bold text-4xl">{section.name}</h1>
               {tasks && tasks.length > 0 ? (
                 tasks.map((task) => {
-                  if (task && task.linked_section === section.id) {
+                  if (
+                    task &&
+                    task.linked_section === section.id &&
+                    format(task.due_date, "yyyy-MM-dd") ===
+                      format(date, "yyyy-MM-dd")
+                  ) {
                     return (
                       <Task
                         task={task}
