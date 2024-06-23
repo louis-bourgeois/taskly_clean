@@ -10,6 +10,8 @@ import passport from "passport";
 import { Strategy } from "passport-local";
 import User from "./models/User.js";
 import appRoutes from "./routes/appRoutes.js";
+import sectionRoutes from "./routes/sectionRoutes.js";
+import tagRoutes from "./routes/tagRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 // Load environment variables
@@ -62,6 +64,8 @@ app.use(passport.session());
 app.use("/app", appRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/sections", sectionRoutes);
+app.use("/api/tags", tagRoutes);
 
 // Middlewares
 // Error Handler
@@ -95,13 +99,14 @@ passport.use(
 
 passport.serializeUser((user, cb) => {
   console.log("====================================");
-  console.log("serialize");
+  console.log("Serializing user:", user);
   console.log("====================================");
   cb(null, user[0]);
 });
 passport.deserializeUser(async (id, cb) => {
   console.log("====================================");
   console.log("deserialize");
+  console.log("Deserializing user with ID:", id);
   console.log("====================================");
   try {
     const user = await User.getData("all", id);

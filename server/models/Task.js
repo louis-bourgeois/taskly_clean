@@ -99,7 +99,9 @@ class Task {
             `A task with the title ${this.title} already exists. Please use a unique title!`
           );
         case "22001":
-          throw new Error("The title is too long, please make sure it doesn't exceed 32 characters!")
+          throw new Error(
+            "The title is too long, please make sure it doesn't exceed 32 characters!"
+          );
       }
       throw e;
     } finally {
@@ -176,27 +178,41 @@ class Task {
 
     if (!currentTask) {
       console.error("Task not found (check Task.js in update)");
-
       throw new Error("Task not found");
     }
 
     const changes = compareObjects(currentTask, updatedTask);
+    let columnsToUpdate = Object.keys(changes);
 
-    const columnsToUpdate = Object.keys(changes);
-
+    // Determine if specific fields are updated
     const linkedSectionUpdated = columnsToUpdate.includes("linked_section");
+    const dueDateUpdated = columnsToUpdate.includes("dueDate");
 
-    const tablesToUpdate = linkedSectionUpdated ? ["task"] : [];
+    // Handle dueDate to due_date conversion
+    if (dueDateUpdated) {
+      columnsToUpdate = columnsToUpdate.map((col) =>
+        col === "dueDate" ? "due_date" : col
+      );
+    }
 
-    if (columnsToUpdate.length > 1 || !linkedSectionUpdated) {
+    // Tables to update based on the fields that have changed
+    const tablesToUpdate = columnsToUpdate.includes("linked_section")
+      ? ["task"]
+      : [];
+    if (columnsToUpdate.some((col) => col !== "linked_section")) {
       tablesToUpdate.push("task_properties");
     }
 
+    // Remove duplicates while keeping the last occurrence
+    columnsToUpdate = columnsToUpdate
+      .reverse()
+      .filter((col, index, self) => self.indexOf(col) === index)
+      .reverse();
+
+    // Update the necessary tables
     for (const table of tablesToUpdate) {
       let setParts = [];
-
       let queryParams = [];
-
       let paramIndex = 1;
 
       for (const col of columnsToUpdate) {
@@ -205,14 +221,12 @@ class Task {
           (table === "task_properties" && col !== "linked_section")
         ) {
           setParts.push(`${col} = $${paramIndex++}`);
-
           queryParams.push(changes[col]);
         }
       }
 
       if (queryParams.length > 0) {
         queryParams.push(updatedTask.id);
-
         const sqlQuery = `UPDATE ${table} SET ${setParts.join(", ")} WHERE ${
           table === "task_properties" ? "task_id" : "id"
         } = $${paramIndex}`;

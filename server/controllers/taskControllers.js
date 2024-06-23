@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import { now } from "../utils/now.js";
 import { isUUID } from "../utils/validate.js";
 export async function updateTask(req, res) {
+  console.log(req.user);
   try {
     const { task } = req.body;
 
@@ -17,6 +18,8 @@ export async function updateTask(req, res) {
 }
 
 export async function addTask(req, res) {
+  console.log(req.isAuthenticated());
+  console.log(req.user);
   try {
     const { taskData: newTaskData } = req.body;
     console.log(newTaskData);
